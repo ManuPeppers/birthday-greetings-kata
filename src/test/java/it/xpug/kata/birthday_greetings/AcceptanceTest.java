@@ -6,7 +6,6 @@ import org.junit.*;
 
 import com.dumbster.smtp.*;
 
-
 public class AcceptanceTest {
 
 	private static final int NONSTANDARD_PORT = 9999;

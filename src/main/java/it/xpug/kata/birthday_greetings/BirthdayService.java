@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -16,6 +18,9 @@ import javax.mail.internet.MimeMessage;
 public class BirthdayService {
 
 	public void sendGreetings(String fileName, XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, AddressException, MessagingException {
+
+		List<Employee> employeesWithBirthdayToday = new ArrayList<Employee>();
+
 		BufferedReader in = new BufferedReader(new FileReader(fileName));
 		String str = "";
 		str = in.readLine(); // skip header
@@ -23,15 +28,23 @@ public class BirthdayService {
 			String[] employeeData = str.split(", ");
 			Employee employee = new Employee(employeeData[1], employeeData[0], employeeData[2], employeeData[3]);
 			if (employee.isBirthday(xDate)) {
-				String recipient = employee.getEmail();
-				String body = "Happy Birthday, dear %NAME%".replace("%NAME%", employee.getFirstName());
-				String subject = "Happy Birthday!";
-				sendMessage(smtpHost, smtpPort, "sender@here.com", subject, body, recipient);
+
+				employeesWithBirthdayToday.add(employee);
+
 			}
+		}
+
+		for(Employee employee: employeesWithBirthdayToday){
+
+			String recipient = employee.getEmail();
+			String body = "Happy Birthday, dear %NAME%".replace("%NAME%", employee.getFirstName()+"!");
+			String subject = "Happy Birthday!";
+			sendMessage(smtpHost, smtpPort, subject, body, recipient);
+
 		}
 	}
 
-	private void sendMessage(String smtpHost, int smtpPort, String sender, String subject, String body, String recipient) throws AddressException, MessagingException {
+	private void sendMessage(String smtpHost, int smtpPort, String subject, String body, String recipient) throws AddressException, MessagingException {
 		// Create a mail session
 		java.util.Properties props = new java.util.Properties();
 		props.put("mail.smtp.host", smtpHost);
@@ -40,7 +53,7 @@ public class BirthdayService {
 
 		// Construct the message
 		Message msg = new MimeMessage(session);
-		msg.setFrom(new InternetAddress(sender));
+		msg.setFrom(new InternetAddress("sender@here.com"));
 		msg.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
 		msg.setSubject(subject);
 		msg.setText(body);
