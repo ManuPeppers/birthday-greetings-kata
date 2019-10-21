@@ -8,7 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileEmployeeRepository {
-    public List<Employee> getEmployeesWhoseBirthdayIsToday(XDate xDate, String fileName) throws IOException, ParseException {
+
+    private final String fileName;
+
+    public FileEmployeeRepository(String fileNames) {
+        this.fileName=fileNames;
+    }
+
+    public List<Employee> getEmployeesWhoseBirthdayIsToday(XDate xDate) throws IOException, ParseException {
         List<Employee> employeesWithBirthdayToday = new ArrayList<Employee>();
 
         BufferedReader in = new BufferedReader(new FileReader(fileName));

@@ -15,9 +15,9 @@ public class BirthdayService {
 
 	public void sendGreetings(String fileName, XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, AddressException, MessagingException {
 
-		FileEmployeeRepository fileEmployeeRepository = new FileEmployeeRepository();
+		FileEmployeeRepository fileEmployeeRepository = new FileEmployeeRepository(fileName);
 
-		List<Employee> employeesWithBirthdayToday = fileEmployeeRepository.getEmployeesWhoseBirthdayIsToday(xDate, fileName);
+		List<Employee> employeesWithBirthdayToday = fileEmployeeRepository.getEmployeesWhoseBirthdayIsToday(xDate);
 
 		for(Employee employee: employeesWithBirthdayToday){
 
@@ -28,8 +28,6 @@ public class BirthdayService {
 
 		}
 	}
-
-
 
 	private void sendMessage(String smtpHost, int smtpPort, String subject, String body, String recipient) throws AddressException, MessagingException {
 		// Create a mail session
