@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -19,6 +18,19 @@ public class BirthdayService {
 
 	public void sendGreetings(String fileName, XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, AddressException, MessagingException {
 
+		List<Employee> employeesWithBirthdayToday = getEmployeesWhoseBirthdayIsToday(xDate, fileName);
+
+		for(Employee employee: employeesWithBirthdayToday){
+
+			String recipient = employee.getEmail();
+			String body = "Happy Birthday, dear %NAME%".replace("%NAME%", employee.getFirstName()+"!");
+			String subject = "Happy Birthday!";
+			sendMessage(smtpHost, smtpPort, subject, body, recipient);
+
+		}
+	}
+
+	private List<Employee> getEmployeesWhoseBirthdayIsToday(XDate xDate, String fileName) throws IOException, ParseException {
 		List<Employee> employeesWithBirthdayToday = new ArrayList<Employee>();
 
 		BufferedReader in = new BufferedReader(new FileReader(fileName));
@@ -33,15 +45,7 @@ public class BirthdayService {
 
 			}
 		}
-
-		for(Employee employee: employeesWithBirthdayToday){
-
-			String recipient = employee.getEmail();
-			String body = "Happy Birthday, dear %NAME%".replace("%NAME%", employee.getFirstName()+"!");
-			String subject = "Happy Birthday!";
-			sendMessage(smtpHost, smtpPort, subject, body, recipient);
-
-		}
+		return employeesWithBirthdayToday;
 	}
 
 	private void sendMessage(String smtpHost, int smtpPort, String subject, String body, String recipient) throws AddressException, MessagingException {
