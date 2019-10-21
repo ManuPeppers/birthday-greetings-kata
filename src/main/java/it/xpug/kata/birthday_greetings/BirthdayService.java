@@ -1,10 +1,7 @@
 package it.xpug.kata.birthday_greetings;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -18,7 +15,9 @@ public class BirthdayService {
 
 	public void sendGreetings(String fileName, XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, AddressException, MessagingException {
 
-		List<Employee> employeesWithBirthdayToday = getEmployeesWhoseBirthdayIsToday(xDate, fileName);
+		FileEmployeeRepository fileEmployeeRepository = new FileEmployeeRepository();
+
+		List<Employee> employeesWithBirthdayToday = fileEmployeeRepository.getEmployeesWhoseBirthdayIsToday(xDate, fileName);
 
 		for(Employee employee: employeesWithBirthdayToday){
 
@@ -30,23 +29,7 @@ public class BirthdayService {
 		}
 	}
 
-	private List<Employee> getEmployeesWhoseBirthdayIsToday(XDate xDate, String fileName) throws IOException, ParseException {
-		List<Employee> employeesWithBirthdayToday = new ArrayList<Employee>();
 
-		BufferedReader in = new BufferedReader(new FileReader(fileName));
-		String str = "";
-		str = in.readLine(); // skip header
-		while ((str = in.readLine()) != null) {
-			String[] employeeData = str.split(", ");
-			Employee employee = new Employee(employeeData[1], employeeData[0], employeeData[2], employeeData[3]);
-			if (employee.isBirthday(xDate)) {
-
-				employeesWithBirthdayToday.add(employee);
-
-			}
-		}
-		return employeesWithBirthdayToday;
-	}
 
 	private void sendMessage(String smtpHost, int smtpPort, String subject, String body, String recipient) throws AddressException, MessagingException {
 		// Create a mail session
