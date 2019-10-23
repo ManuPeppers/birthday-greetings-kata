@@ -15,7 +15,8 @@ public class BirthdayService {
 
 	public void sendGreetings(String fileName, XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, AddressException, MessagingException {
 
-		FileEmployeeRepository fileEmployeeRepository = new FileEmployeeRepository(fileName);
+
+		EmployeeRepository fileEmployeeRepository = new FileEmployeeRepository(fileName);
 
 		List<Employee> employeesWithBirthdayToday = fileEmployeeRepository.getEmployeesWhoseBirthdayIsToday(xDate);
 

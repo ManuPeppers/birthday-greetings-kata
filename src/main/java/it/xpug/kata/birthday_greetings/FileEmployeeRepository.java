@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileEmployeeRepository {
+public class FileEmployeeRepository implements EmployeeRepository {
 
     private final String fileName;
 
@@ -19,10 +19,9 @@ public class FileEmployeeRepository {
         List<Employee> employeesWithBirthdayToday = new ArrayList<Employee>();
 
         BufferedReader in = new BufferedReader(new FileReader(fileName));
-        String str = "";
-        str = in.readLine(); // skip header
-        while ((str = in.readLine()) != null) {
-            String[] employeeData = str.split(", ");
+        String employeerecord =in.readLine(); // skip header
+        while ((employeerecord = in.readLine()) != null) {
+            String[] employeeData = employeerecord.split(", ");
             Employee employee = new Employee(employeeData[1], employeeData[0], employeeData[2], employeeData[3]);
             if (employee.isBirthday(xDate)) {
 
