@@ -1,5 +1,7 @@
 package it.xpug.kata.birthday_greetings;
 
+import com.sun.mail.smtp.SMTPMessage;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -13,8 +15,13 @@ import javax.mail.internet.MimeMessage;
 
 public class BirthdayService {
 
-	public void sendGreetings(String fileName, XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, AddressException, MessagingException {
+	private SmtpMessageSender messageSender;
 
+	public BirthdayService(SmtpMessageSender messageSender) {
+		this.messageSender = messageSender;
+	}
+
+	public void sendGreetings(String fileName, XDate xDate, SmtpMessageSender messageSender) throws IOException, ParseException, AddressException, MessagingException {
 
 		EmployeeRepository fileEmployeeRepository = new FileEmployeeRepository(fileName);
 
@@ -25,17 +32,17 @@ public class BirthdayService {
 			String recipient = employee.getEmail();
 			String body = "Happy Birthday, dear %NAME%".replace("%NAME%", employee.getFirstName()+"!");
 			String subject = "Happy Birthday!";
-			sendMessage(smtpHost, smtpPort, subject, body, recipient);
+			sendMessage(messageSender, subject, body, recipient);
 
 		}
 	}
 
-	private void sendMessage(String smtpHost, int smtpPort, String subject, String body, String recipient) throws AddressException, MessagingException {
+	private void sendMessage(SmtpMessageSender smtpMessageSender, String subject, String body, String recipient) throws AddressException, MessagingException {
+
+		this.messageSender = new SmtpMessageSender(smtpMessageSender.getSmtpHost(),smtpMessageSender.getSmtpPort());
+
 		// Create a mail session
-		java.util.Properties props = new java.util.Properties();
-		props.put("mail.smtp.host", smtpHost);
-		props.put("mail.smtp.port", "" + smtpPort);
-		Session session = Session.getInstance(props, null);
+		Session session = createMailSession(smtpMessageSender.getSmtpHost(),smtpMessageSender.getSmtpPort());
 
 		// Construct the message
 		Message msg = new MimeMessage(session);
@@ -46,5 +53,12 @@ public class BirthdayService {
 
 		// Send the message
 		Transport.send(msg);
+	}
+
+	public Session createMailSession(String smtpHost, int smtpPort) {
+		java.util.Properties props = new java.util.Properties();
+		props.put("mail.smtp.host", smtpHost);
+		props.put("mail.smtp.port", "" + smtpPort);
+		return Session.getInstance(props, null);
 	}
 }

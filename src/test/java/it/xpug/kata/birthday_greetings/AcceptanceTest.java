@@ -9,13 +9,13 @@ import com.dumbster.smtp.*;
 public class AcceptanceTest {
 
 	private static final int NONSTANDARD_PORT = 9999;
-	private BirthdayService birthdayService;
 	private SimpleSmtpServer mailServer;
+	private SmtpMessageSender smtpMessageSender = new SmtpMessageSender("localhost",NONSTANDARD_PORT);
+	private BirthdayService birthdayService = new BirthdayService(smtpMessageSender);
 
 	@Before
 	public void setUp() throws Exception {
 		mailServer = SimpleSmtpServer.start(NONSTANDARD_PORT);
-		birthdayService = new BirthdayService();
 	}
 
 	@After
@@ -27,7 +27,7 @@ public class AcceptanceTest {
 	@Test
 	public void willSendGreetings_whenItsSomebodysBirthday() throws Exception {
 
-		birthdayService.sendGreetings("employee_data.txt", new XDate("2008/10/08"), "localhost", NONSTANDARD_PORT);
+		birthdayService.sendGreetings("employee_data.txt", new XDate("2008/10/08"),smtpMessageSender);
 
 		assertEquals("message not sent?", 1, mailServer.getReceivedEmailSize());
 		SmtpMessage message = (SmtpMessage) mailServer.getReceivedEmail().next();
@@ -40,7 +40,7 @@ public class AcceptanceTest {
 
 	@Test
 	public void willNotSendEmailsWhenNobodysBirthday() throws Exception {
-		birthdayService.sendGreetings("employee_data.txt", new XDate("2008/01/01"), "localhost", NONSTANDARD_PORT);
+		birthdayService.sendGreetings("employee_data.txt", new XDate("2008/01/01"),smtpMessageSender);
 
 		assertEquals("what? messages?", 0, mailServer.getReceivedEmailSize());
 	}
