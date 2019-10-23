@@ -29,12 +29,16 @@ public class BirthdayService {
 
 		for(Employee employee: employeesWithBirthdayToday){
 
-			String recipient = employee.getEmail();
-			String body = "Happy Birthday, dear %NAME%".replace("%NAME%", employee.getFirstName()+"!");
-			String subject = "Happy Birthday!";
-			sendMessage(messageSender, subject, body, recipient);
+			sendGreetingsTo(messageSender, employee);
 
 		}
+	}
+
+	public void sendGreetingsTo(SmtpMessageSender messageSender, Employee employee) throws MessagingException {
+		String recipient = employee.getEmail();
+		String body = "Happy Birthday, dear %NAME%".replace("%NAME%", employee.getFirstName()+"!");
+		String subject = "Happy Birthday!";
+		sendMessage(messageSender, subject, body, recipient);
 	}
 
 	private void sendMessage(SmtpMessageSender smtpMessageSender, String subject, String body, String recipient) throws AddressException, MessagingException {
